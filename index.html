@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Google - Effet secret</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+  background: white;
+}
+
+#page {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+#content {
+  text-align: center;
+  z-index: 10;
+}
+
+.logo {
+  font-size: 70px;
+  font-weight: bold;
+  margin-bottom: 30px;
+}
+
+input {
+  width: 450px;
+  max-width: 80vw;
+  padding: 16px 20px;
+  border: 2px solid #ddd;
+  border-radius: 30px;
+  font-size: 20px;
+  outline: none;
+}
+
+input:focus {
+  border-color: #4285f4;
+}
+
+#pieces {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.piece {
+  position: absolute;
+  background: white;
+  border: 2px solid #ddd;
+  box-shadow: 0 3px 10px rgba(0,0,0,.2);
+  animation: fly 1.5s ease-out forwards;
+}
+
+@keyframes fly {
+  0% {
+    transform:
+      translate(0, 0)
+      rotate(0deg)
+      scale(1);
+    opacity: 1;
+  }
+
+  100% {
+    transform:
+      translate(var(--x), var(--y))
+      rotate(var(--r))
+      scale(0.1);
+    opacity: 0;
+  }
+}
+
+.explode {
+  animation: explode 0.4s ease-out;
+}
+
+@keyframes explode {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.2);
+  }
+
+  100% {
+    transform: scale(0);
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div id="page">
+
+  <div id="content">
+    <div class="logo">
+      <span style="color:#4285F4">G</span>
+      <span style="color:#DB4437">o</span>
+      <span style="color:#F4B400">o</span>
+      <span style="color:#4285F4">g</span>
+      <span style="color:#0F9D58">l</span>
+      <span style="color:#DB4437">e</span>
+    </div>
+
+    <input
+      id="search"
+      type="text"
+      placeholder="Tape une commande..."
+      autocomplete="off"
+    >
+  </div>
+
+</div>
+
+<div id="pieces"></div>
+
+<script>
+
+const search = document.getElementById("search");
+const page = document.getElementById("page");
+const content = document.getElementById("content");
+const pieces = document.getElementById("pieces");
+
+search.addEventListener("keydown", function(event) {
+
+  if (event.key !== "Enter") return;
+
+  const command = search.value.trim().toLowerCase();
+
+  if (command === "tourne 360") {
+
+    search.disabled = true;
+
+    let tours = 0;
+
+    function tourner() {
+
+      tours++;
+
+      page.style.transition = "transform 0.45s ease-in-out";
+
+      page.style.transform = `rotate(${tours * 360}deg)`;
+
+      if (tours < 6) {
+
+        setTimeout(tourner, 500);
+
+      } else {
+
+        setTimeout(explosion, 300);
+      }
+    }
+
+    tourner();
+  }
+});
+
+function explosion() {
+
+  content.classList.add("explode");
+
+  for (let i = 0; i < 80; i++) {
+
+    const piece = document.createElement("div");
+
+    piece.className = "piece";
+
+    const size = Math.random() * 35 + 10;
+
+    piece.style.width = size + "px";
+    piece.style.height = size + "px";
+
+    piece.style.left =
+      (window.innerWidth / 2 + (Math.random() - 0.5) * 500) + "px";
+
+    piece.style.top =
+      (window.innerHeight / 2 + (Math.random() - 0.5) * 300) + "px";
+
+    piece.style.setProperty(
+      "--x",
+      ((Math.random() - 0.5) * 1800) + "px"
+    );
+
+    piece.style.setProperty(
+      "--y",
+      ((Math.random() - 0.5) * 1200) + "px"
+    );
+
+    piece.style.setProperty(
+      "--r",
+      ((Math.random() - 0.5) * 1500) + "deg"
+    );
+
+    pieces.appendChild(piece);
+  }
+
+  setTimeout(() => {
+    page.style.opacity = "0";
+  }, 300);
+}
+
+</script>
+
+</body>
+</html>
